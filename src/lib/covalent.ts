@@ -1,3 +1,8 @@
+/**
+ * Covalent (GoldRush) helpers.
+ * - fetchChains: gets supported EVM chains dynamically
+ * - fetchBalancesForChain: gets balances for an address on a specific chain
+ */
 import axios from "axios"
 
 export interface CovalentChain {
@@ -25,15 +30,27 @@ export interface ChainPortfolio {
 
 const COVALENT_BASE = "https://api.covalenthq.com/v1"
 
+function covalentClient(apiKey: string) {
+  return axios.create({
+    baseURL: COVALENT_BASE,
+    timeout: 20000, // 20s timeout to avoid hung requests
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+    },
+    // never throw for non-2xx; we handle status codes explicitly
+    validateStatus: () => true,
+  })
+}
+
 /**
  * Fetch all supported chains.
  */
 export async function fetchChains(apiKey: string): Promise<CovalentChain[]> {
-  const resp = await axios.get(`${COVALENT_BASE}/chains/`, {
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-    },
-  })
+  const client = covalentClient(apiKey)
+  const resp = await client.get(`/chains/`)
+  if (resp.status >= 400) {
+    return []
+  }
   const data = resp.data
   const items: any[] = data?.data?.items || data?.items || []
   // Normalize to EVM chains (Covalent focuses on EVM; includes testnets)
@@ -57,15 +74,10 @@ export async function fetchBalancesForChain(
   chain: CovalentChain,
   address: string,
 ): Promise<ChainPortfolio> {
-  const url = `${COVALENT_BASE}/${chain.chain_id}/address/${address}/balances_v2/?quote-currency=USD&nft=false&no-nft-fetch=true`
-  const resp = await axios.get(url, {
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-    },
-    validateStatus: () => true,
-  })
+  const client = covalentClient(apiKey)
+  const url = `/${chain.chain_id}/address/${address}/balances_v2/?quote-currency=USD&nft=false&no-nft-fetch=true`
+  const resp = await client.get(url)
   if (resp.status >= 400) {
-    // Return empty for this chain instead of throwing, so other chains still work
     return { chainId: chain.chain_id, chainName: chain.name, items: [] }
   }
 
@@ -114,3 +126,5 @@ function formatUnitsSafe(value: any, decimals: number): string {
     return "0"
   }
 }
+
+// Ensure named exports are available explicitly for bundlers/importers

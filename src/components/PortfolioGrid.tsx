@@ -1,6 +1,6 @@
 "use client"
 import { Card } from "@/components/ui/card"
-import { TokenCard } from "@/components/TokenCard"
+import { TokenCard } from "@/src/components/TokenCard"
 
 type Props = {
   data: {

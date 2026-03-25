@@ -1,3 +1,10 @@
+/**
+ * Ethers v6 helpers for sending tokens.
+ * Provides:
+ *  - getConnectedAddress()
+ *  - sendNativeToken(to, amount)
+ *  - sendERC20Token(tokenAddress, to, amount)
+ */
 import { BrowserProvider, Contract, parseEther, parseUnits } from "ethers"
 
 // Minimal ERC20 ABI for decimals + transfer

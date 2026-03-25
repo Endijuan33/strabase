@@ -5,7 +5,7 @@
  * We call createAppKit on the client in a guarded useEffect to avoid SSR issues.
  */
 import React from "react"
-import { getClientEnv } from "@/lib/env"
+import { getClientEnv } from "@/src/lib/env"
 
 let initialized = false
 
@@ -33,8 +33,16 @@ export function AppKitProvider() {
             name: "strabase-portofolio",
             description: "Multi-chain portfolio viewer",
             url: NEXT_PUBLIC_METADATA_URL,
-            icons: [`${NEXT_PUBLIC_METADATA_URL}/placeholder-logo.png`],
+            icons: [`${NEXT_PUBLIC_METADATA_URL}/placeholder.svg?height=128&width=128&query=app%20icon`],
+            redirect: {
+              universal: NEXT_PUBLIC_METADATA_URL,
+              // Prefer deep links if your app has a native scheme; can be empty if not applicable
+              // native: "strabase://",
+              // Some AppKit versions accept a linkMode to prefer deep linking:
+              // linkMode: "deep",
+            },
           },
+          connectMethodsOrder: ["walletConnect", "injected", "coinbaseWallet"],
           features: {
             email: false,
             socials: false,
@@ -53,15 +61,4 @@ export function AppKitProvider() {
   }, [])
 
   return null
-}
-
-declare global {
-  namespace JSX {
-    interface IntrinsicElements {
-      "appkit-connect-button": React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> & {
-        size?: "sm" | "md"
-        label?: string
-      }
-    }
-  }
 }

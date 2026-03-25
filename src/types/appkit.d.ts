@@ -7,6 +7,7 @@ declare namespace JSX {
     "appkit-connect-button": React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> & {
       size?: "sm" | "md"
       label?: string
+      loadingLabel?: string
     }
   }
 }
