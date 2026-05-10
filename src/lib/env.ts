@@ -1,3 +1,7 @@
+/**
+ * Environment variables validation using Zod.
+ * Throws descriptive errors at runtime when required variables are missing.
+ */
 import { z } from "zod"
 
 const ServerSchema = z.object({
