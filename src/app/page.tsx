@@ -27,9 +27,22 @@ type PortfolioResponse = {
       decimals: number
       quote?: number | null
       nativeToken?: boolean
+      verified?: boolean
+      blockchainName?: string
+      protocol?: string | null
     }>
     totalUsd?: number
+    tokenCount?: number
+    verifiedTokens?: number
+    unverifiedTokens?: number
   }>
+  summary?: {
+    totalTokens: number
+    totalUsd: number
+    chainsScanned: number
+    chainsFailed: number
+    chainsWithAssets: number
+  }
   updatedAt: string
 }
 
